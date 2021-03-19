@@ -1,11 +1,13 @@
 const mysql = require('mysql');
-const { dbConnection } = require('./config')
+const { localDbConnection, UATDbConnection, environment } = require('./config')
 
 class Database {
   static instance = null
 
   constructor() {
-    this.connection = mysql.createConnection(dbConnection);
+    this.connection = mysql.createConnection(
+      environment === 'LOCAL' ? localDbConnection : UATDbConnection
+    );
     this.connection.connect();
   }
 

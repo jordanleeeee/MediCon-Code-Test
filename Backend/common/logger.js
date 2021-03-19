@@ -12,7 +12,7 @@ const transport = new (WINSTON.transports.DailyRotateFile)({
   createTree: true
 });
 const logger = WINSTON.createLogger({
-  level: (Config.environment === 'UAT') ? 'debug' : 'info',
+  level: (Config.environment === 'LOCAL') ? 'debug' : 'info',
   format: WINSTON.format.combine(
     WINSTON.format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss.SSS'

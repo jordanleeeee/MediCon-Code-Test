@@ -1,4 +1,4 @@
-const session = require('./session').getInstance()
+const session = require('./common/session')
 const log = require('./common/logger');
 const schedule = require('node-schedule')
 
