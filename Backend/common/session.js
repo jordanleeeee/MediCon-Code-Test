@@ -69,7 +69,7 @@ module.exports = {
   updateToken: (token) => {
     updateToken(token)
   },
-  removeToken: (token, uuid) => {
+  removeToken: () => {
     const query = `
     delete from session
     where expireTime < ${Date.now()}`
