@@ -21,10 +21,11 @@ router.post('/login', (req, response) => {
   const query = `
   SELECT clinicName, phoneNo, address, email, cid 
   from clinic 
-  where email='${loginEmail}' and password='${loginPw}'`
+  where email=? and password=?`
 
-  db.makeQuery(query).then(async info => {
+  db.makeSqlQuery(query, [loginEmail, loginPw]).then(async info => {
     if (info.length > 0) {
+      console.log(info);
       var msg = info[0];
       msg.token = await session.getToken(input.UUID, msg.cid)
       response.send(RES(1, info[0]))
@@ -51,9 +52,9 @@ router.put('/create', (req, response) => {
   Insert into clinic
   (email, password, clinicName, phoneNo, address)
   values
-  ('${input.Email}', '${hashPw}', '${input.ClinicName}', '${input.Phone}', '${input.Address}')`
+  (?, ?, ?, ?, ?)`
 
-  db.makeQuery(query).then(info => {
+  db.makeSqlQuery(query, [input.Email, hashPw, input.ClinicName, input.Phone, input.Address]).then(info => {
     response.send(RES(1, "create account success"))
   }).catch(err => {
     if (err.errno == 1062) {
