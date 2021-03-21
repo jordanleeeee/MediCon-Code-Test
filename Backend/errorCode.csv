@@ -1,4 +1,5 @@
 errorCode, meaning
 -9996, missing input parama
 -9995, authorization error
+-9994, token expire
 -9999, db error

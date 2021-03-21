@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import Dimension from '../constant/Dimension'
 import Color from '../constant/Color'
+import RestApiManager from '../common/RestApiManager';
+import AsyncStorageManager from '../common/AsyncStroageManager';
+import ErrorManager from '../common/ErrorManager';
 
 function InputRow({label, onChange, ...textInputProps}){
   const [input, changeInput] = useState('')
@@ -24,7 +27,7 @@ function InputRow({label, onChange, ...textInputProps}){
   )
 }
 
-export default function LoginPage() {
+export default function LoginPage({navigation}) {
 
   const [email, changeEmail] = useState('')
   const [password, changePassword] = useState('')
@@ -62,30 +65,49 @@ export default function LoginPage() {
     }  else if(password !== passwordRetype){
       changeErrMsg('password and confirm password must be the same')
     } else {
-      changeErrMsg('')
+      RestApiManager.createAccount(email, clinicName, phone, address, password, res => {
+        if(res.resCode === 1){
+          changeErrMsg('')
+          RestApiManager.userLogin(email, password, async res => {
+            if(res.resCode == 1){
+              await AsyncStorageManager.save('cid', res.resMsg.cid.toString())
+              await AsyncStorageManager.save('address', res.resMsg.address)
+              await AsyncStorageManager.save('clinicName', res.resMsg.clinicName)
+              await AsyncStorageManager.save('email', res.resMsg.email)
+              await AsyncStorageManager.save('phoneNo', res.resMsg.phoneNo)
+              await AsyncStorageManager.save('token', res.resMsg.token)
+              navigation.navigate('AfterLoginMain')
+            }
+          })
+        } else if(res.resCode === -1) {
+          changeErrMsg(res.resMsg)
+        } else{
+          ErrorManager.solve(res.resCode, navigation, Alert)
+        }
+      })
     }
   }
 
   return (
-    <ScrollView style={{flex: 1}}>
-      <View style={styles.container}>
-        <Text style={styles.header}>Register Now</Text>
-        
-        <InputRow label='Email' onChange={(text) => {changeEmail(text)}} autoCapitalize='none'/>
-        <InputRow label='Clinic Name' onChange={(text) => {changeClinicName(text)}}/>
-        <InputRow label='Phone Number' onChange={(text) => {changePhone(text)}} keyboardType='numeric'/>
-        <InputRow label='Address' onChange={(text) => {changeAddress(text)}}/>
-        <InputRow label='Password' onChange={(text) => {changePassword(text)}} 
-          secureTextEntry={true}/>
-        <InputRow label='Confirm Password' onChange={(text) => {changePasswordReType(text)}} 
-          secureTextEntry= {true}/>
-        <Text style={{color: 'red', marginTop: 15, fontSize: 18, width: '100%', textAlign:'center'}}>{errMsg}</Text>
-        
-        <TouchableOpacity style={styles.submitBtn} onPress={()=>submitAction()}>
-          <Text>Register</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <ScrollView style={styles.container}>
+          <Text style={styles.header}>Register Now</Text>
+          
+          <InputRow label='Email' onChange={(text) => {changeEmail(text)}} autoCapitalize='none'/>
+          <InputRow label='Clinic Name' onChange={(text) => {changeClinicName(text)}}/>
+          <InputRow label='Phone Number' onChange={(text) => {changePhone(text)}} keyboardType='numeric'/>
+          <InputRow label='Address' onChange={(text) => {changeAddress(text)}}/>
+          <InputRow label='Password' onChange={(text) => {changePassword(text)}} 
+            secureTextEntry={true}/>
+          <InputRow label='Confirm Password' onChange={(text) => {changePasswordReType(text)}} 
+            secureTextEntry= {true}/>
+          <Text style={{color: 'red', marginTop: 15, fontSize: 18, width: '100%', textAlign:'center'}}>{errMsg}</Text>
+          
+          <TouchableOpacity style={styles.submitBtn} onPress={()=>submitAction()}>
+            <Text>Register</Text>
+          </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView> 
   );
 }
 

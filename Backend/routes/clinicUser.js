@@ -2,16 +2,16 @@ const express = require('express')
 const router = express.Router()
 const config = require('../common/config')
 const RES = require('../common/response')
-const log = require('../common/logger')
 const crypto = require('crypto');
 const session = require('../common/session')
 const db = require('../common/db').getInstance()
+const errorHandler = require('../common/errorHandler')
 
 
 router.post('/login', (req, response) => {
   var input = req.body
   if (input.Email == null || input.Password == null || input.UUID == null) {
-    response.send(RES(-9996, "missing input parama"))
+    errorHandler.handleMissingInputParams(response)
     return
   }
 
@@ -27,14 +27,13 @@ router.post('/login', (req, response) => {
     if (info.length > 0) {
       console.log(info);
       var msg = info[0];
-      msg.token = await session.getToken(input.UUID, msg.cid)
+      msg.token = await session.getToken(input.UUID, req.ip, msg.cid)
       response.send(RES(1, info[0]))
     } else {
       response.send(RES(-1, "invalid login email or password"))
     }
   }).catch(err => {
-    log.warn(err)
-    response.send(RES(-9999, "db error"))
+    errorHandler.handleDbError(response, err)
   })
 })
 
@@ -60,8 +59,7 @@ router.put('/create', (req, response) => {
     if (err.errno == 1062) {
       response.send(RES(-1, `you already got an account for ${input.Email}, please use another email`))
     } else {
-      log.warn(err)
-      response.send(RES(-9999, "db error"))
+      errorHandler.handleDbError(response, err)
     }
   })
 

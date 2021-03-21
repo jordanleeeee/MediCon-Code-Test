@@ -7,7 +7,7 @@ module.exports = {
   startDailyClearExpiredTokenJob: () => {
     schedule.scheduleJob('0 0 * * *', function() { // every 00:00
       log.info("DailyClearExpiredTokenJobStart")
-      session.removeToken()
+      session.removeExpireToken()
     })
   }
 }

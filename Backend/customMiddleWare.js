@@ -1,13 +1,8 @@
 const requestIp = require('request-ip')
 const log = require('./common/logger')
 const mung = require('express-mung')
-const RES = require('./common/response')
 const session = require('./common/session')
-
-function rejectAction(response){
-  response.status(403)
-  response.send(RES(-9995, 'authorization error'))
-}
+const errorHandler = require('./common/errorHandler')
 
 module.exports = {
   getMiddleWare: () => {
@@ -30,16 +25,16 @@ module.exports = {
     object.authorization = async (req, response, next) => {
       // console.log("authorization checking");
       if (req.headers.authorization == null) {
-        rejectAction(response)
+        errorHandler.handleAuthorizationError(response)
       } else {
         var autType = req.headers.authorization.substring(0, 6)
         var token = req.headers.authorization.substring(7)
         if (autType !== 'Bearer' || token == null) {
-          rejectAction(response)
+          errorHandler.handleAuthorizationError(response)
         } else {
-          const CID = await session.verifyToken(token)
+          const CID = await session.verifyToken(token, req.ip)
           if (CID === false) {
-            rejectAction(response)
+            errorHandler.handleTokenExpireExpireError(response)
           } else {
             req.CID = CID
             req.token = token
@@ -58,7 +53,7 @@ module.exports = {
     })
 
     object.updateLastAction = (req, response, next) => {
-      session.updateToken(req.token)
+      session.updateToken(req.token, req.ip)
       next()
     }
 

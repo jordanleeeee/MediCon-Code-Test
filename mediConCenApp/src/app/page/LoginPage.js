@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, Alert, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 
 import Dimension from '../constant/Dimension'
 import Color from '../constant/Color'
 import icon from '../../img/heartbeat.png'
+import RestApiManager from '../common/RestApiManager';
+import AsyncStorageManager from '../common/AsyncStroageManager';
+import ErrorManager from '../common/ErrorManager';
 
-export default function LoginPage() {
+export default function LoginPage({navigation}) {
 
-  const [email, changeEmail] = useState('')
-  const [password, changePassword] = useState('')
+  const [email, changeEmail] = useState('jordanlee80@gmail.com')
+  const [password, changePassword] = useState('admin1234')
   const [errMsg, changeErrMsg] = useState('')
 
   function submitAction(){
@@ -17,12 +20,27 @@ export default function LoginPage() {
     } else if(!password){
       changeErrMsg('please enter password')
     } else {
-      changeErrMsg('')
+      RestApiManager.userLogin(email, password, async res => {
+        if(res.resCode === 1){
+          changeErrMsg('')
+          await AsyncStorageManager.save('cid', res.resMsg.cid.toString())
+          await AsyncStorageManager.save('address', res.resMsg.address)
+          await AsyncStorageManager.save('clinicName', res.resMsg.clinicName)
+          await AsyncStorageManager.save('email', res.resMsg.email)
+          await AsyncStorageManager.save('phoneNo', res.resMsg.phoneNo)
+          await AsyncStorageManager.save('token', res.resMsg.token)
+          navigation.navigate('AfterLoginMain')
+        } else if(res.resCode === -1) {
+          changeErrMsg('incorrect password')
+        } else {
+          ErrorManager.solve(res.resCode, navigation, Alert)
+        }
+      })
     }
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <Image source={icon} style={{maxHeight: Dimension.width*0.5, aspectRatio: 1/1}} resizeMode='contain' />
       <TextInput style={styles.textInput} placeholder='email'
@@ -38,9 +56,11 @@ export default function LoginPage() {
         <Text>Sign in</Text>
       </TouchableOpacity>
 
-      <Text style={{color: 'white'}}> create account </Text>
-    
-    </View>
+      <TouchableOpacity onPress={()=>{navigation.navigate('RegisterPage')}}>
+        <Text style={{color: 'white'}}> create account </Text>
+      </TouchableOpacity>
+       
+    </SafeAreaView>
     
   );
 }

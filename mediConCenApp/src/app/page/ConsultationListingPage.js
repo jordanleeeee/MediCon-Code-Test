@@ -1,140 +1,63 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
-import CheckBox from 'react-native-check-box'
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker'
 
 import Dimension from '../constant/Dimension'
 import Color from '../constant/Color'
 import CommonTool from '../common/CommonToolManager'
+import AsyncStroageManager from '../common/AsyncStroageManager'
 import ConsultationModel from '../modal/ConsultationModel'
+import RestApiManager from '../common/RestApiManager';
+import ErrorManager from '../common/ErrorManager';
 
-export default function LoginPage({clinicName}) {
-
-  clinicName = 'HappyClinic'
-
-  const [from, changeFrom] = useState(1609473600000)
-  const [to, changeTo] = useState(1616247311534)
+export default function LoginPage({navigation}) {
+  const [clinicName, setClinicName] = useState()
+  const [from, changeFrom] = useState(Date.now())
+  const [updateTo, changeUpdateTo] = useState(0)
+  const [to, changeTo] = useState(Date.now())
   const [enlargeViewVisible, setEnlargeViewVisible] = useState(false)
   const [enlargeIdx, setEnlargeIndex] = useState(0)
   const [displayMode, changeDisplayMode] = useState('daily') //weekly, monthly
-  const [recordList, changeRecordList] = useState([
-    {
-      "doctorName": "lam",
-      "patientName": "wan",
-      "diagnosis": "fever",
-      "medication": "vitamin C",
-      "consultationFee": 200,
-      "time": 1616208448629,
-      "followUp": 0
-    },
-    {
-        "doctorName": "lam",
-        "patientName": "lau",
-        "diagnosis": "fever",
-        "medication": "injection",
-        "consultationFee": 200,
-        "time": 1616150682679,
-        "followUp": 0
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150131098,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150089268,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "headache",
-        "medication": "drug",
-        "consultationFee": 100,
-        "time": 1616141982282,
-        "followUp": 0
-    },
-    {
-      "doctorName": "lam",
-      "patientName": "lau",
-      "diagnosis": "fever",
-      "medication": "injection",
-      "consultationFee": 200,
-      "time": 1616150682679,
-      "followUp": 0
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150131098,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150089268,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "headache",
-        "medication": "drug",
-        "consultationFee": 100,
-        "time": 1616141982282,
-        "followUp": 0
-    },
-    {
-      "doctorName": "lam",
-      "patientName": "lau",
-      "diagnosis": "fever",
-      "medication": "injection",
-      "consultationFee": 200,
-      "time": 1616150682679,
-      "followUp": 0
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150131098,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "covid19",
-        "medication": "NA",
-        "consultationFee": 1000,
-        "time": 1616150089268,
-        "followUp": 1
-    },
-    {
-        "doctorName": "lee",
-        "patientName": "chan",
-        "diagnosis": "headache",
-        "medication": "drug",
-        "consultationFee": 100,
-        "time": 1616141982282,
-        "followUp": 0
+  const [recordList, changeRecordList] = useState([])
+  const [stopToLoad, setStopToLoad] = useState(false)
+
+  useEffect(()=> {
+    AsyncStroageManager.get('clinicName').then( res => {
+      setClinicName(res)
+      const [start, end] = CommonTool.getDayDuration(Date.now())
+      updateList(start, end, true)
+    })
+  }, [])
+
+  function updateList(start, end, entireNewList){
+    if(entireNewList){
+      changeFrom(start)
+      changeTo(end-1) // change 00:00:00 to 23:59:59
+      setStopToLoad(false)
     }
-  ])
+    RestApiManager.getRecord(start, end, res => {
+      if(res.resCode == 1){
+        if(entireNewList){
+          changeRecordList(res.resMsg)
+        } else {
+          changeRecordList([...recordList, ...res.resMsg])
+        }
+        
+        if(res.resMsg.length < 10){
+          setStopToLoad(true)
+        } else {
+          changeUpdateTo(res.resMsg[9].time)
+        }
+      } else {
+        ErrorManager.solve(res.resCode, navigation, Alert)
+      }
+    })
+  }
+
+  function addRecord(){
+    updateList(from, updateTo, false) 
+  }
+
 
   function renderRecord(item, idx){
     return(
@@ -155,33 +78,106 @@ export default function LoginPage({clinicName}) {
   function getTimeDisplay(){
     const timeString = displayMode === 'daily'? 
       CommonTool.praseTime(from, 'DD/MM/YYYY'): 
-        `${CommonTool.praseTime(from, 'DD/MM/YYYY')} - ${CommonTool.praseTime(to, 'DD/MM/YYYY')}`
+        `${CommonTool.praseTime(from, 'DD/MM/YY')} - ${CommonTool.praseTime(to, 'DD/MM/YY')}`
     return (
-      <View style={{flexDirection: 'row', justifyContent:'space-between', width: '80%', alignItems: 'center'}}>
-        <Text style={{fontSize: 40}} onPress={()=>previousTimeSlot()}>{'<'}</Text>
-        <Text style={{fontSize: 18}}>{timeString}</Text>
-        <Text style={{fontSize: 40}} onPress={()=>nextTimeSlot()}>{'>'}</Text>
+      <View style={{flexDirection: 'row', justifyContent:'space-between', width: '60%', alignItems: 'center'}}>
+        <TouchableOpacity onPress={()=>previousTimeSlot()}>
+          <Text style={{fontSize: 40, color: 'grey'}}>{'<'}</Text>
+        </TouchableOpacity>
+        <Text style={{fontSize: 15, color: 'white'}}>{timeString}</Text>
+        <TouchableOpacity onPress={()=>nextTimeSlot()}>
+          <Text style={{fontSize: 40, color: 'grey'}}>{'>'}</Text>
+        </TouchableOpacity>
+        
       </View>
     )
   }
 
+  function updateDisplayMode(mode){
+    if(displayMode !== mode){
+      changeDisplayMode(mode)
+      if(mode === 'daily'){
+        const [start, end] = CommonTool.getDayDuration(Date.now())
+        updateList(start, end, true)
+      } else if(mode ==='weekly'){
+        const [start, end] = CommonTool.getWeekDuration(Date.now())
+        updateList(start, end, true)
+      } else {
+        const [start, end] = CommonTool.getMonthDuration(Date.now())
+        updateList(start, end, true)
+      }
+    }
+  }
+
   function nextTimeSlot(){
-    console.log("next");
+    const mode = displayMode
+    const update = (start, end) => {
+      if(start < Date.now()){
+        updateList(start, end, true)
+      }
+    }
+    if(mode === 'daily'){
+      const [start, end] = CommonTool.getDayDuration(to+1)
+      update(start, end)
+    } else if(mode ==='weekly'){
+      const [start, end] = CommonTool.getWeekDuration(to+1)
+      update(start, end)
+    } else {
+      const [start, end] = CommonTool.getMonthDuration(to+1)
+      update(start, end)
+    }
   }
 
   function previousTimeSlot(){
-    console.log('prev');
+    const mode = displayMode
+    if(mode === 'daily'){
+      const [start, end] = CommonTool.getDayDuration(from-1)
+      updateList(start, end, true)
+    } else if(mode ==='weekly'){
+      const [start, end] = CommonTool.getWeekDuration(from-1)
+      updateList(start, end, true)
+    } else {
+      const [start, end] = CommonTool.getMonthDuration(from-1)
+      updateList(start, end, true)
+    }
   }
 
   return (
     <View style={styles.container}>
-      <ConsultationModel modalVisible={enlargeViewVisible} content={recordList[enlargeIdx]} />
-      <Text style={{fontSize: 20, marginBottom: 20}}>{clinicName} Consultation Record</Text>
-      {getTimeDisplay()}
-      <View style={{flex: 1, backgroundColor: 'grey', width: '100%'}}>
+      <ConsultationModel modalVisible={enlargeViewVisible} content={recordList[enlargeIdx]} 
+      onClose={()=>{setEnlargeViewVisible(false)}}/>
+      <Text style={{fontSize: 22, marginBottom: 20, color: 'white'}}>{clinicName} Consultation Record</Text>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '90%'}}>
+        <DropDownPicker
+          items={[
+              {label: 'daily', value: 'daily'},
+              {label: 'weekly', value: 'weekly'},
+              {label: 'monthly', value: 'monthly'},
+          ]}
+          defaultValue={displayMode}
+          containerStyle={{height: 30, width: 100}}
+          style={{backgroundColor: 'grey'}}
+          itemStyle={{
+              justifyContent: 'flex-start'
+          }}
+          dropDownStyle={{backgroundColor: 'white'}}
+          onChangeItem={item => updateDisplayMode(item.value)}
+        />
+        {getTimeDisplay()}
+        </View>
+        <View style={{flex: 1, backgroundColor: Color.lightGrey, width: '100%'}}>
         <FlatList 
           data={recordList}
           renderItem={({item, index}) => renderRecord(item, index)}
+          keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={
+            recordList.length === 0 ?
+            <Text style={{textAlign: 'center', marginTop: 50}}>No record for this time period</Text>
+            : !stopToLoad? <ActivityIndicator size="large" color="#0000ff" />:
+            <Text style={{textAlign: 'center', marginVertical: 25}}>No more record</Text>
+          }
+          onEndReached={() => { stopToLoad? null: addRecord() }}
+          onEndReachedThreshold={0.01}
         />
       </View>
     </View>

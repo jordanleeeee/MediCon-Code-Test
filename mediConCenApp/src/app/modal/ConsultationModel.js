@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, Image } from 'react-native';
 import { Grid, Row, Col } from "react-native-easy-grid";
-import CheckBox from 'react-native-check-box'
 
 import Dimension from '../constant/Dimension'
-import Color from '../constant/Color'
 import CommonTool from '../common/CommonToolManager';
 
-export default function ConsultationModel({modalVisible, content}) {
+export default function ConsultationModel({modalVisible, content, onClose}) {
   const [isVisible, setIsVisible] = useState(modalVisible)
   const [details, setDetails] = useState({
     "doctorName": "lee",
@@ -25,11 +23,12 @@ export default function ConsultationModel({modalVisible, content}) {
   }, [modalVisible, content]);
 
   return (
+    !isVisible? null: 
     <Modal transparent={true} visible={isVisible}>
       <View style={styles.outerContainer}>
         <View style={styles.container}>
-          <TouchableOpacity style={{width: '100%', alignItems: 'flex-end', color: 'red'}} 
-            onPress={()=> setIsVisible(false)}>
+          <TouchableOpacity style={{width: '100%', alignItems: 'flex-end'}} 
+            onPress={()=> {setIsVisible(false); onClose()}}>
             <Text style={{fontSize: 40, color: 'red'}}>x</Text>
           </TouchableOpacity>
           <Grid>
@@ -38,6 +37,7 @@ export default function ConsultationModel({modalVisible, content}) {
               <Row><Text style={styles.labelText}>Doctor:</Text></Row>
               <Row><Text style={styles.labelText}>Patient:</Text></Row>
               <Row><Text style={styles.labelText}>Diagnosis:</Text></Row>
+              <Row><Text style={styles.labelText}>Medication:</Text></Row>
               <Row><Text style={styles.labelText}>Fee:</Text></Row>
               <Row><Text style={styles.labelText}>FollowUp:</Text></Row>
             </Col>
@@ -46,8 +46,10 @@ export default function ConsultationModel({modalVisible, content}) {
               <Row><Text style={styles.contentText}>{details.doctorName}</Text></Row>
               <Row><Text style={styles.contentText}>{details.patientName}</Text></Row>
               <Row><Text style={styles.contentText}>{details.diagnosis}</Text></Row>
+              <Row><Text style={styles.contentText}>{details.medication}</Text></Row>
               <Row><Text style={styles.contentText}>$ {details.consultationFee}</Text></Row>
-              <Row><CheckBox isChecked={details.followUp} disabled={true}/></Row>
+              <Row><Image source={details.followUp? require('../../img/check.png'): require('../../img/cross-sign.png') } 
+              style={{width: 20, aspectRatio: 1/1}} resizeMode='contain' /></Row>
             </Col>
           </Grid>
         </View>

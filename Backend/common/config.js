@@ -12,8 +12,8 @@ module.exports = {
     password: 'poweruser',
     database: 'clinicapp'
   },
-  environment: 'UAT',
-  // environment: 'UAT',
+  environment: 'LOCAL',
+  // environment: 'UAT', 
   password_SHA_key: 'clinicAppSecret',
   tokenExpireTime: 30 * 60 * 1000 //30mins
 }
