@@ -29,7 +29,7 @@ router.get('/record', (req, response) => {
 
 router.put('/create', (req, response) => {
   var input = req.body
-  if (input.DoctorName == null || input.PatientName == null || input.Diagnosis == null
+  if (input.DoctorName == null || input.PatientName == null || input.Diagnosis == null || input.Time == null
     || input.Medication == null || input.ConsultationFee == null || input.FollowUp == null) {
       errorHandler.handleMissingInputParams(response)
     return
@@ -42,7 +42,7 @@ router.put('/create', (req, response) => {
 
   const queryParams = [
     req.CID, input.DoctorName, input.PatientName, input.Diagnosis, input.Medication, 
-    input.ConsultationFee, Date.now(), input.FollowUp
+    input.ConsultationFee, input.Time, input.FollowUp
   ]
 
   db.makeSqlQuery(query, queryParams).then(info => {
