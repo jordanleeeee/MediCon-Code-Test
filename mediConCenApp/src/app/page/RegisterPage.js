@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Color.background,
     paddingHorizontal: Dimension.width*0.1,
-    paddingTop: Dimension.height*0.1,
   },
   header: {
     width: '100%',
@@ -123,7 +122,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'white',
     marginBottom: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    paddingTop: Dimension.height*0.1,
   },
   textInput: {
     backgroundColor: 'grey',

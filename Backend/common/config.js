@@ -9,11 +9,11 @@ module.exports = {
   UATDbConnection: {
     host: '3.138.141.214',
     user: 'anywhereuser',
-    password: 'poweruser',
+    password: 'anywhere',
     database: 'clinicapp'
   },
-  environment: 'LOCAL',
-  // environment: 'UAT', 
+  // environment: 'LOCAL',
+  environment: 'UAT', 
   password_SHA_key: 'clinicAppSecret',
   tokenExpireTime: 30 * 60 * 1000 //30mins
 }

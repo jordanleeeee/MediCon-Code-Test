@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
 
 import Dimension from '../constant/Dimension'
@@ -29,11 +29,16 @@ export default function LoginPage({navigation}) {
     })
   }, [])
 
+  function refresh(){
+    updateList(from, to, true)
+  }
+
   function updateList(start, end, entireNewList){
     if(entireNewList){
       changeFrom(start)
       changeTo(end-1) // change 00:00:00 to 23:59:59
       setStopToLoad(false)
+      changeRecordList([])
     }
     RestApiManager.getRecord(start, end, res => {
       if(res.resCode == 1){
@@ -170,6 +175,7 @@ export default function LoginPage({navigation}) {
           data={recordList}
           renderItem={({item, index}) => renderRecord(item, index)}
           keyExtractor={(item, index) => index.toString()}
+          refreshControl={<RefreshControl refreshing={false} onRefresh={() => refresh()} />}
           ListFooterComponent={
             recordList.length === 0 ?
             <Text style={{textAlign: 'center', marginTop: 50}}>No record for this time period</Text>
