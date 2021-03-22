@@ -57,11 +57,11 @@ const RestApiManager = {
         , generateRequestDetails('GET', token)), callback
     )
   },
-  async createConsultationRecord(Doctor, PatientName, Diagnosis, Medication, ConsultationFee, FollowUp, callback) {
+  async createConsultationRecord(Doctor, PatientName, Diagnosis, Medication, ConsultationFee, Time, FollowUp, callback) {
     const token = await AsyncStorageManager.get('token')
     handleRestApiResoponse(
       fetch(`${config.apiEndpoint}:${config.apiListeningPort}/consultation/create`, generateRequestDetails('PUT', token, 
-        {DoctorName, PatientName, Diagnosis, Medication, ConsultationFee, FollowUp}, 'json')), callback
+        {DoctorName, PatientName, Diagnosis, Medication, ConsultationFee, Time,  FollowUp}, 'json')), callback
     )
   },
 }
