@@ -4,6 +4,7 @@
 first you have to config the ip address, go to src/app/constant/Config.js
 change apiEndpoint to your internal ip address (required). By defalut the app listening 
 on port 3050, change it if needed. Howerer, make sure the front end is trying to connect to the port where the backend is listening.
+Also make sure you phone and your computer is under the same network. Otherwise you can't connect to the backend.
 
 ## Install app
 to use the app in your phone, download the app "expo go" in playstore 
