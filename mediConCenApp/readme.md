@@ -2,11 +2,11 @@
 
 ## Configuration
 first you have to config the ip address, go to src/app/constant/Config.js
-change apiEndpoint to your internal ip address (required). By defalut the listening 
+change apiEndpoint to your internal ip address (required). By defalut the app listening 
 on port 3050, change it if needed. Howerer, make sure the front end is trying to connect to the port where the backend is listening.
 
 ## Install app
-to use the app in your phone, download the expo go in playstore 
+to use the app in your phone, download the app "expo go" in playstore 
 or apple store
 
 run the following command to start hosting the app
