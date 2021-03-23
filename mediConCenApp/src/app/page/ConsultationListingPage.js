@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator, Alert, Platform } from 'react-native';
 import { Picker } from '@react-native-community/picker'
 import DropDownPicker from 'react-native-dropdown-picker'
 
@@ -89,7 +89,7 @@ export default function LoginPage({ navigation }) {
       CommonTool.praseTime(from, 'DD/MM/YYYY') :
       `${CommonTool.praseTime(from, 'DD/MM/YY')} - ${CommonTool.praseTime(to, 'DD/MM/YY')}`
     return (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '60%', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '55%', alignItems: 'center' }}>
         <TouchableOpacity onPress={() => previousTimeSlot()}>
           <Text style={{ fontSize: 40, color: 'grey' }}>{'<'}</Text>
         </TouchableOpacity>
@@ -156,35 +156,42 @@ export default function LoginPage({ navigation }) {
       <ConsultationModel modalVisible={enlargeViewVisible} content={recordList[enlargeIdx]}
         onClose={() => { setEnlargeViewVisible(false) }} />
       <Text style={{ fontSize: 22, marginBottom: 20, color: 'white' }}>{clinicName} Consultation Record</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '90%' }}>
-        <DropDownPicker zIndex={10}
-          items={[
-              {label: 'daily', value: 'daily'},
-              {label: 'weekly', value: 'weekly'},
-              {label: 'monthly', value: 'monthly'},
-          ]}
-          defaultValue={displayMode}
-          containerStyle={{height: 30, width: 100}}
-          itemStyle={{
-              justifyContent: 'flex-start',
-              zIndex: 2,
-              flex: 1
-          }}
-          style={{zIndex: 2, flex: 1}}
-          dropDownStyle={{backgroundColor: 'white', zIndex: 10}}
-          onChangeItem={item => updateDisplayMode(item.value)}
-        />
-        {/* <Picker
-          mode="dropdown"
-          dropdownIconColor='#4295f5'
-          selectedValue={displayMode}
-          style={{ height: 30, width: 100, backgroundColor: 'white' }}
-          onValueChange={(itemValue, itemIndex) => updateDisplayMode(itemValue)}
-        >
-          <Picker.Item label="daily" value="daily" />
-          <Picker.Item label="weekly" value="weekly" />
-          <Picker.Item label="monthly" value="monthly" />
-        </Picker> */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '95%' }}>
+        {
+          Platform.OS === 'android'? 
+          // this not display properly in iphone
+          <DropDownPicker zIndex={10}
+            items={[
+                {label: 'daily', value: 'daily'},
+                {label: 'weekly', value: 'weekly'},
+                {label: 'monthly', value: 'monthly'},
+            ]}
+            defaultValue={displayMode}
+            containerStyle={{height: 30, width: 100}}
+            itemStyle={{
+                justifyContent: 'flex-start',
+                zIndex: 2,
+                flex: 1
+            }}
+            style={{zIndex: 2, flex: 1}}
+            dropDownStyle={{backgroundColor: 'white', zIndex: 10}}
+            onChangeItem={item => updateDisplayMode(item.value)}
+          />: 
+          <View style={{flexDirection: 'row'}}>
+            <Text style={{color: displayMode==='daily'? 'red': 'white'}} onPress={()=>{
+              updateDisplayMode('daily')
+            }}>Daily</Text>
+            <Text style={{color: 'white'}}> | </Text>
+            <Text style={{color: displayMode==='weekly'? 'red': 'white'}} onPress={()=>{
+              updateDisplayMode('weekly')
+            }}>Weekly</Text>
+            <Text style={{color: 'white'}}> | </Text>
+            <Text style={{color: displayMode==='monthly'? 'red': 'white'}} onPress={()=>{
+              updateDisplayMode('monthly')
+            }}>Monthly</Text>
+          </View>
+        }
+        
         {getTimeDisplay()}
       </View>
       <View style={{ flex: 1, backgroundColor: Color.lightGrey, width: '100%' }}>

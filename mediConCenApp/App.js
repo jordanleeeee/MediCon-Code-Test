@@ -5,7 +5,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginPage from './src/app/page/LoginPage'
 import RegisterPage from './src/app/page/RegisterPage'
 import AfterLoginMain from './src/app/page/AfterLoginMain'
-import ConsultationListingPage from './src/app/page/ConsultationListingPage'
 
 export default function App() {
   const Stack = createStackNavigator();
