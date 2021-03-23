@@ -8,7 +8,7 @@ router.get('/record', (req, response) => {
   var start = req.query.from
   var end = req.query.to
 
-  if(start == null || end == null){
+  if (start == null || end == null) {
     errorHandler.handleMissingInputParams(response)
     return
   }
@@ -31,7 +31,7 @@ router.put('/create', (req, response) => {
   var input = req.body
   if (input.DoctorName == null || input.PatientName == null || input.Diagnosis == null || input.Time == null
     || input.Medication == null || input.ConsultationFee == null || input.FollowUp == null) {
-      errorHandler.handleMissingInputParams(response)
+    errorHandler.handleMissingInputParams(response)
     return
   }
   const query = `
@@ -41,7 +41,7 @@ router.put('/create', (req, response) => {
   (?, ?, ?, ?, ?, ?, ?, ?)`
 
   const queryParams = [
-    req.CID, input.DoctorName, input.PatientName, input.Diagnosis, input.Medication, 
+    req.CID, input.DoctorName, input.PatientName, input.Diagnosis, input.Medication,
     input.ConsultationFee, input.Time, input.FollowUp
   ]
 

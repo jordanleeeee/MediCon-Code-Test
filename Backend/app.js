@@ -3,7 +3,6 @@ const cors = require('cors')
 const express = require('express')
 const schedule = require('./schedule.js')
 const RES = require('./common/response')
-const db = require('./common/db').getInstance()
 const CustomMiddleWare = require('./customMiddleWare').getMiddleWare()
 
 const app = express()
@@ -13,21 +12,13 @@ app.use(cors())
 app.use(CustomMiddleWare.receiveRequestLogging)
 app.use(CustomMiddleWare.responseRequestLogging)
 
+// no need auth route
 app.get('/', (req, res) => {
-  console.log("on home");
-  res.send(RES(1, 'we are on home'))
+  res.send(RES(1, 'connection ok'))
 })
-
-app.get('/test', (req, res) => {
-  db.makeQuery('SELECT * from clinic').then(info => {
-    res.send(RES(1, info))
-  }).catch(err => {
-    res.send(RES(-1, err))
-  })
-})
-
 app.use('/user', require('./routes/clinicUser'))
 
+// need auth route
 app.use(CustomMiddleWare.authorization)
 app.use(CustomMiddleWare.updateLastAction)
 app.use('/consultation', require('./routes/consultation'))

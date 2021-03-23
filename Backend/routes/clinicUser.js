@@ -25,7 +25,6 @@ router.post('/login', (req, response) => {
 
   db.makeSqlQuery(query, [loginEmail, loginPw]).then(async info => {
     if (info.length > 0) {
-      console.log(info);
       var msg = info[0];
       msg.token = await session.getToken(input.UUID, req.ip, msg.cid)
       response.send(RES(1, info[0]))

@@ -5,13 +5,13 @@ const db = require('./db').getInstance()
 const { tokenExpireTime } = require('./config');
 const log = require('./logger');
 
-function refreshToken(newToken, uuid, cid){
+function refreshToken(newToken, uuid, ip, cid) {
   return new Promise((resolve, reject) => {
     const query = `
     update session 
     set token = '${newToken}', expireTime = ${Date.now() + tokenExpireTime}
-    where uuid = '${uuid}' and cid = '${cid}'`
-    db.makeQuery(query).then(info => {resolve()}).catch(err => { reject(); log.warn(err) })
+    where uuid = '${uuid}' and ip = '${ip.toString()}' and cid = '${cid}'`
+    db.makeQuery(query).then(info => { resolve() }).catch(err => { reject(); log.warn(err) })
   })
 }
 
@@ -21,12 +21,11 @@ module.exports = {
       const query = `
       select token
       from session
-      where uuid = '${uuid}' and cid = '${cid}'`
-      console.log(query);
+      where uuid = '${uuid}' and ip = '${ip.toString()}' and cid = '${cid}'`
       db.makeQuery(query).then(async info => {
         const newToken = crypto.createHash('sha256').update(uuid + cid + uuidv4()).digest("hex")
         if (info.length > 0) {
-          await refreshToken(newToken, uuid, cid)
+          await refreshToken(newToken, uuid, ip, cid)
           resolve(newToken)
         } else {
           const query = `
@@ -34,7 +33,6 @@ module.exports = {
           (token, uuid, cid, expireTime, ip)
           values
           ('${newToken}', '${uuid}', ${cid}, ${Date.now() + tokenExpireTime}, '${ip}')`
-          console.log(query);
           db.makeQuery(query).then(info => {
             resolve(newToken)
           }).catch(err => {
@@ -43,7 +41,6 @@ module.exports = {
           })
         }
       }).catch(err => {
-        log.warn("get token")
         log.warn(err)
         reject("db error")
       })
