@@ -1,6 +1,6 @@
 const ErrorManager = {
-  solve(errorCode, navigation, alert){
-    if(errorCode === -9994 || errorCode === -9995){
+  solve(errorCode, navigation, alert) {
+    if (errorCode === -9994 || errorCode === -9995) {
       alert.alert(
         "Token expired",
         "please login again",

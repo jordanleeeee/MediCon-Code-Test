@@ -5,13 +5,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginPage from './src/app/page/LoginPage'
 import RegisterPage from './src/app/page/RegisterPage'
 import AfterLoginMain from './src/app/page/AfterLoginMain'
+import ConsultationListingPage from './src/app/page/ConsultationListingPage'
 
 export default function App() {
   const Stack = createStackNavigator();
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="LoginPage" component={LoginPage} />
         <Stack.Screen name="RegisterPage" component={RegisterPage} />
         <Stack.Screen name="AfterLoginMain" component={AfterLoginMain} />

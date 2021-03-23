@@ -1,6 +1,18 @@
 # Mdiconcen Code Test Backend
 
-To start the backend server, clone the repo
+## Config
+The server will listening on port 3050, change it if needed
+(change value of listeningPort in /common/config.js) . However
+make sure your client is trying to connect to the same port where
+this backend app is listining. <br />
+
+By default this server is trying to connect to mysql server
+on my aws vm, no extra config is needed. If you want to create your own database in your local environment.  Create a database 
+call clinicapp, and run testdata.sql. Change value of localDbConnection set environment
+variable to 'LOCAL' in /common/config.js
+
+## Start server
+To start the backend server,
 run the following command
 
 ```
@@ -11,19 +23,15 @@ node app.js
 ## This webserver will communicating with client with restApi
 
 
-### Clinic
+# Clinic
 
   * [create ac](#1-create-ac)
   * [create record](#2-create-record)
   * [get record](#3-get-record)
   * [login](#4-login)
+  * [test](#5-test)
 
 --------
-
-
-## Ungrouped
-
-
 
 ### 1. create ac
 
@@ -43,11 +51,11 @@ URL: localhost:3050/user/create
 
 ```js        
 {
-    "Email": "3test@gmail.com",
-    "Password": "3test1234",
-    "ClinicName": "Tester3",
-    "Phone": "9998",
-    "Address": "Kowloon"
+    "Email": "testuser@gmail.com",
+    "Password": "5test1234",
+    "ClinicName": "Tester4",
+    "Phone": "99988",
+    "Address": "Kowloon East"
 }
 ```
 
@@ -64,11 +72,11 @@ URL: localhost:3050/user/create
 
 ```js        
 {
-    "Email": "3test@gmail.com",
-    "Password": "3test1234",
-    "ClinicName": "Tester3",
-    "Phone": "9998",
-    "Address": "Kowloon"
+    "Email": "testuser@gmail.com",
+    "Password": "5test1234",
+    "ClinicName": "Tester4",
+    "Phone": "99988",
+    "Address": "Kowloon East"
 }
 ```
 
@@ -108,10 +116,11 @@ URL: localhost:3050/consultation/create
 ```js        
 {
     "DoctorName": "lam",
-    "PatientName": "lau",
+    "PatientName": "wan",
     "Diagnosis": "fever",
-    "Medication": "injection",
+    "Medication": "vitamin C",
     "ConsultationFee": 200,
+    "Time": 1616478166176,
     "FollowUp": false
 }
 ```
@@ -130,10 +139,11 @@ URL: localhost:3050/consultation/create
 ```js        
 {
     "DoctorName": "lam",
-    "PatientName": "lau",
+    "PatientName": "wan",
     "Diagnosis": "fever",
-    "Medication": "injection",
+    "Medication": "vitamin C",
     "ConsultationFee": 200,
+    "Time": 1616478166176,
     "FollowUp": false
 }
 ```
@@ -169,10 +179,28 @@ URL: localhost:3050/consultation/record
 
 
 
+***Query params:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| from | 1606342400000 |  |
+| to | 1616342400000 |  |
+
+
+
 ***More example Requests/Responses:***
 
 
 ##### I. Example Request: get record
+
+
+
+***Query:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| from | 1606342400000 |  |
+| to | 1616342400000 |  |
 
 
 
@@ -184,30 +212,22 @@ URL: localhost:3050/consultation/record
         {
             "doctorName": "lee",
             "patientName": "chan",
-            "diagnosis": "covid19",
-            "medication": "NA",
-            "consultationFee": 1000,
-            "time": 1616150131098,
-            "followUp": 1
-        },
-        {
-            "doctorName": "lee",
-            "patientName": "chan",
-            "diagnosis": "covid19",
-            "medication": "NA",
-            "consultationFee": 1000,
-            "time": 1616150089268,
-            "followUp": 1
-        },
-        {
-            "doctorName": "lee",
-            "patientName": "chan",
             "diagnosis": "headache",
-            "medication": "drug",
-            "consultationFee": 100,
-            "time": 1616141982282,
+            "medication": "vitaminA",
+            "consultationFee": 1602,
+            "time": 1616328663294,
             "followUp": 0
-        }
+        },
+        {
+            "doctorName": "lam",
+            "patientName": "chan",
+            "diagnosis": "fever",
+            "medication": "drug",
+            "consultationFee": 9,
+            "time": 1616328662941,
+            "followUp": 1
+        },
+        ...
     ]
 }
 ```
@@ -274,7 +294,7 @@ URL: localhost:3050/user/login
         "address": "hk",
         "email": "jordanlee80@gmail.com",
         "cid": 1,
-        "token": "c3f7c8223661e19cdfef3198e36ee758778a9d861916e058371ba1f1fbb84070"
+        "token": "994cfcb91b1e563f98c479b3cbe36c5082d2a4f8f4bc7f0186491ed6b0718190"
     }
 }
 ```
@@ -286,7 +306,20 @@ URL: localhost:3050/user/login
 
 
 
+### 5. test
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3050/test
+```
+
+
 
 ---
 [Back to top](#clinic)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2021-03-19 19:21:33 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2021-03-23 14:54:26 by [docgen](https://github.com/thedevsaddam/docgen)

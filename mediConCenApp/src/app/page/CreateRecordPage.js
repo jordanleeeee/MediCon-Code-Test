@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { StyleSheet, Text, SafeAreaView, View, TextInput, ScrollView, TouchableOpacity, CheckBox, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, SafeAreaView, View, TextInput, ScrollView, TouchableOpacity, CheckBox, Alert, Platform } from 'react-native';
 import DateTimePicker from "react-native-modal-datetime-picker";
 
 import Dimension from '../constant/Dimension'
@@ -8,13 +8,13 @@ import CommonToolsManager from '../common/CommonToolManager';
 import RestApiManager from '../common/RestApiManager';
 import ErrorManager from '../common/ErrorManager';
 
-function InputRow({label, value, onChange, ...textInputProps}){
-  return(
+function InputRow({ label, value, onChange, ...textInputProps }) {
+  return (
     <View>
-      <Text style={{color: 'white', fontSize: 18}}>{label}:</Text>
+      <Text style={{ color: 'white', fontSize: 18 }}>{label}:</Text>
       {
         React.cloneElement(
-          <TextInput/>,
+          <TextInput />,
           {
             style: styles.textInput,
             onChangeText: onChange,
@@ -23,11 +23,11 @@ function InputRow({label, value, onChange, ...textInputProps}){
           }
         )
       }
-      </View>
+    </View>
   )
 }
 
-export default function LoginPage({navigation}) {
+export default function LoginPage({ navigation }) {
 
   const [doctorName, changeDoctorName] = useState()
   const [patientName, changePatientName] = useState()
@@ -39,7 +39,7 @@ export default function LoginPage({navigation}) {
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [errMsg, changeErrMsg] = useState('')
 
-  function clearInput(){
+  function clearInput() {
     changeDiagnosis()
     changeFee()
     changeDoctorName()
@@ -52,25 +52,25 @@ export default function LoginPage({navigation}) {
 
   }
 
-  function submitAction(){
-    if(!doctorName){
+  function submitAction() {
+    if (!doctorName) {
       changeErrMsg('please enter doctor name')
-    } else if(!patientName){
+    } else if (!patientName) {
       changeErrMsg('please enter patient name')
-    } else if(!diagnosis){
+    } else if (!diagnosis) {
       changeErrMsg('please enter diagnosis')
-    } else if(!medication){
+    } else if (!medication) {
       changeErrMsg('please enter medication')
-    } else if(!fee){
+    } else if (!fee) {
       changeErrMsg('please enter fee')
-    } else if(isNaN(fee)){
+    } else if (isNaN(fee)) {
       changeErrMsg('please a valid number for the fee')
-    } else if(!time){
+    } else if (!time) {
       changeErrMsg('please select a time')
     } else {
       changeErrMsg('')
       RestApiManager.createConsultationRecord(doctorName, patientName, diagnosis, medication, fee, time, followup, res => {
-        if(res.resCode === 1 ){
+        if (res.resCode === 1) {
           Alert.alert(
             "",
             "Create Record Success",
@@ -93,54 +93,54 @@ export default function LoginPage({navigation}) {
   }
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Color.background}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Color.background }}>
       <ScrollView style={styles.container}>
-        <Text style = {{fontSize: 28, color: 'white', marginBottom: 30, textAlign: 'center'}}>Create Consultation Record</Text>
-        <InputRow label='Doctor' value={doctorName} onChange={changeDoctorName}/>
-        <InputRow label='Patient' value={patientName} onChange={changePatientName}/>
+        <Text style={{ fontSize: 28, color: 'white', marginBottom: 30, textAlign: 'center' }}>Create Consultation Record</Text>
+        <InputRow label='Doctor' value={doctorName} onChange={changeDoctorName} />
+        <InputRow label='Patient' value={patientName} onChange={changePatientName} />
         <InputRow label='Diagnosis' value={diagnosis} onChange={changeDiagnosis} />
-        <InputRow label='Medication' value={medication} onChange={changeMedication}/>
-        <InputRow label='Fee' value={fee} onChange={changeFee} keyboardType='numeric'/>
+        <InputRow label='Medication' value={medication} onChange={changeMedication} />
+        <InputRow label='Fee' value={fee} onChange={changeFee} keyboardType='numeric' returnKeyType={(Platform.OS === 'ios') ? 'done' : 'next'}/>
         <DateTimePicker
-          mode = 'datetime'
+          mode='datetime'
           isVisible={openDatePicker}
-          onConfirm={(date)=>{console.log(date); setOpenDatePicker(false); changeTime(new Date(date).getTime())}}
-          onCancel={()=>setOpenDatePicker(false)}
+          onConfirm={(date) => { setOpenDatePicker(false); changeTime(new Date(date).getTime()) }}
+          onCancel={() => setOpenDatePicker(false)}
         />
         <View>
-          <Text style={{color: 'white', fontSize: 18}}>{'Time'}:</Text>
-          <TouchableOpacity style={{...styles.textInput, justifyContent: 'center'}} onPress={()=>{
+          <Text style={{ color: 'white', fontSize: 18 }}>{'Time'}:</Text>
+          <TouchableOpacity style={{ ...styles.textInput, justifyContent: 'center' }} onPress={() => {
             setOpenDatePicker(true)
-          }}> 
-            <Text style={{fontSize: 20}}>{time?CommonToolsManager.praseTime(time, 'DD/MM/YY hh:mm'): ''}</Text>
+          }}>
+            <Text style={{ fontSize: 20 }}>{time ? CommonToolsManager.praseTime(time, 'DD/MM/YY hh:mm') : ''}</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
-          <Text style={{color: 'white', fontSize: 18, marginRight: 20}}>{'Followup'}:</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ color: 'white', fontSize: 18, marginRight: 20 }}>{'Followup'}:</Text>
           <CheckBox tintColors={{ true: 'white', false: 'black' }} value={followup} onValueChange={changeFollowup} />
         </View>
-        <Text style={{color: 'red', marginTop: 15, fontSize: 18, width: '100%', textAlign:'center'}}>{errMsg}</Text>
-        
+        <Text style={{ color: 'red', marginTop: 15, fontSize: 18, width: '100%', textAlign: 'center' }}>{errMsg}</Text>
 
-        <TouchableOpacity style={styles.submitBtn} onPress={()=>submitAction()}>
-          <Text>Register</Text>
+
+        <TouchableOpacity style={styles.submitBtn} onPress={() => submitAction()}>
+          <Text>Create</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView> 
-    
+    </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Color.background,
-    paddingHorizontal: Dimension.width*0.1,
-    marginTop: Dimension.height*0.05
+    paddingHorizontal: Dimension.width * 0.1,
+    marginTop: Dimension.height * 0.05
   },
   textInput: {
     backgroundColor: Color.inputField,
-    width: Dimension.width*0.8,
+    width: Dimension.width * 0.8,
     paddingHorizontal: 20,
     height: 40,
     borderRadius: 20,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   submitBtn: {
     backgroundColor: 'white',
     width: '100%',
-    paddingHorizontal: Dimension.width*0.08,
+    paddingHorizontal: Dimension.width * 0.08,
     height: 40,
     borderRadius: 20,
     fontSize: 26,

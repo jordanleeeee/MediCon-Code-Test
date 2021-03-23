@@ -3,9 +3,9 @@ import uuid from 'react-native-uuid';
 
 class AsyncStorageManager {
 
-  static getDeviceUUID(){
+  static getDeviceUUID() {
     return AsyncStorage.getItem('UUID').then((value) => {
-      if(value){
+      if (value) {
         return value
       } else {
         const newUUID = uuid.v4()

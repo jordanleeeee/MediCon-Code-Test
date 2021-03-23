@@ -1,4 +1,5 @@
 module.exports = {
+  listeningPort: 3050,
   // db config
   localDbConnection: {
     host: 'localhost',
