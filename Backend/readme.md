@@ -7,7 +7,7 @@ make sure your client is trying to connect to the same port where
 this backend app is listining. <br />
 
 By default this server is trying to connect to mysql server
-on my aws vm, no extra config is needed. If you want to create your own database in your local environment.  Create a database 
+on my aws vm, no extra config is needed (no guarantee that the server is always up and running). If you want to create your own database in your local environment.  Create a database 
 call clinicapp, and run testdata.sql. Change value of localDbConnection and set environment
 variable to 'LOCAL' in /common/config.js
 
